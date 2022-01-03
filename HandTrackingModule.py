@@ -47,6 +47,7 @@ class handDetector:
         return img
 
     def findPosition(self, img, handNo=0, draw=True):
+        xmin, ymin, xmax, ymax = 0, 0, 0, 0
         xList = []
         yList = []
         bbox = []
@@ -60,14 +61,14 @@ class handDetector:
                 xList.append(currX)
                 yList.append(currY)
                 # print(id, currX, currY)
-                lmList.append([id, currX, currY])
+                self.lmList.append([id, currX, currY])
                 if draw:
                     # print("wow")
                     cv2.circle(img, (currX, currY), 10, (81, 181, 248), cv2.FILLED)
 
-        xmin, xmax = min(xList), max(xList)
-        ymin, ymax = min(yList), max(yList)
-        bbox = xmin, ymin, xmax, ymax
+            xmin, xmax = min(xList), max(xList)
+            ymin, ymax = min(yList), max(yList)
+            bbox = xmin, ymin, xmax, ymax
 
         if draw:
             cv2.rectangle(
@@ -80,40 +81,38 @@ class handDetector:
 
         return self.lmList, bbox
 
+    def fingersUp(self):
+        fingers = []
 
-def fingersUp(self):
-    finger = []
-
-    # For Thumb
-    if self.lmList[self.tipIds[0]][1] > self.lmList[self.tipIds[0] - 1][1]:
-        fingers.append(1)
-    else:
-        fingers.append(0)
-
-    # Rest of the fingers
-    for id in range(1, 5):
-
-        if self.lmList[self.tipIds[id]][2] < self.lmList[self.tipIds[id] - 2][2]:
+        # For Thumb
+        if self.lmList[self.tipIds[0]][1] > self.lmList[self.tipIds[0] - 1][1]:
             fingers.append(1)
         else:
             fingers.append(0)
 
-    return fingers
+        # Rest of the fingers
+        for id in range(1, 5):
 
+            if self.lmList[self.tipIds[id]][2] < self.lmList[self.tipIds[id] - 2][2]:
+                fingers.append(1)
+            else:
+                fingers.append(0)
 
-def findDistance(self, p1, p2, img, draw=True, r=15, t=3):
-    x1, y1 = self.lmList[p1][1:]
-    x2, y2 = self.lmList[p2][1:]
-    currX, currY = (x1 + x2) // 2, (y1 + y2) // 2
+        return fingers
 
-    if draw:
-        cv2.line(img, (x1, y1), (x2, y2), (255, 0, 255), t)
-        cv2.circle(img, (x1, y1), r, (255, 0, 255), cv2.FILLED)
-        cv2.circle(img, (x2, y2), r, (255, 0, 255), cv2.FILLED)
-        cv2.circle(img, (currX, currY), r, (0, 0, 255), cv2.FILLED)
-    length = math.hypot(x2 - x1, y2 - y1)
+    def findDistance(self, p1, p2, img, draw=True, r=15, t=3):
+        x1, y1 = self.lmList[p1][1:]
+        x2, y2 = self.lmList[p2][1:]
+        currX, currY = (x1 + x2) // 2, (y1 + y2) // 2
 
-    return length, img, [x1, y1, x2, y2, currX, currY]
+        if draw:
+            cv2.line(img, (x1, y1), (x2, y2), (180, 0, 167), t)
+            cv2.circle(img, (x1, y1), r, (180, 0, 167), cv2.FILLED)
+            cv2.circle(img, (x2, y2), r, (180, 0, 167), cv2.FILLED)
+            cv2.circle(img, (currX, currY), r, (167, 180, 0), cv2.FILLED)
+        length = math.hypot(x2 - x1, y2 - y1)
+
+        return length, img, [x1, y1, x2, y2, currX, currY]
 
 
 def main():
@@ -144,4 +143,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-print("Code completed!")
+# print("Code completed!")
