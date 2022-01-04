@@ -109,7 +109,31 @@ while True:
         ):
             cv2.circle(img, (x4, y4), 15, (167, 0, 180), cv2.FILLED)
             pyautogui.doubleClick()
-        # middle, ring, pinky up and thumb and pointer down: Close the program
+        # 14. Middle and ring down: Move windows to the left
+        if (
+            fingers[0] == 1
+            and fingers[1] == 1
+            and fingers[2] == 0
+            and fingers[3] == 0
+            and fingers[4] == 1
+        ):
+            with pyautogui.hold("ctrl"):
+                pyautogui.press("left")
+                time.sleep(0.5)
+
+        # 15. Middle and ring down: Move windows to the right
+        if (
+            fingers[0] == 1
+            and fingers[1] == 1
+            and fingers[2] == 1
+            and fingers[3] == 0
+            and fingers[4] == 1
+        ):
+            with pyautogui.hold("ctrl"):
+                pyautogui.press("right")
+                # time.sleep(0.5)
+
+        # 16. middle, ring, pinky up and thumb and pointer down: Close the program
         if (
             fingers[0] == 0
             and fingers[1] == 0
