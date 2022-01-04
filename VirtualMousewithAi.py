@@ -26,6 +26,7 @@ while True:
     if len(lmList) != 0:
         x1, y1 = lmList[8][1:]
         x2, y2 = lmList[12][1:]
+        x3, y3 = lmList[20][1:]
 
         # print(x1, y1, x2, y2)
 
@@ -36,20 +37,21 @@ while True:
             img, (frameR, frameR), (640 - frameR, 480 - frameR), (167, 0, 180), 2
         )
         # 4. Only index Finger : Moving Mode
-        if fingers[1] == 1 and fingers[2] == 0:
+        if fingers[1] == 1 and fingers[2] == 0 and fingers[4] == 0:
             # 5. Convert Coordinates
-            x3 = np.interp(x1, (frameR, 640 - frameR), (0, wScr))
-            y3 = np.interp(y1, (frameR, 480 - frameR), (0, hScr))
+            x4 = np.interp(x1, (frameR, 640 - frameR), (0, wScr))
+            y4 = np.interp(y1, (frameR, 480 - frameR), (0, hScr))
 
             # 6. Smoothen Values
-            currLocX = prevLocX + (x3 - prevLocX) / smoothening
-            currLocY = prevLocY + (y3 - prevLocY) / smoothening
+            currLocX = prevLocX + (x4 - prevLocX) / smoothening
+            currLocY = prevLocY + (y4 - prevLocY) / smoothening
 
             # 7. Move mouse
             autopy.mouse.move(wScr - currLocX, currLocY)
             cv2.circle(img, (x1, y1), 15, (167, 0, 180), cv2.FILLED)
             prevLocX, prevLocY = currLocX, currLocY
-        # 8. Both index and middle fingers are up: Cliking Mode
+
+        # 8. Both index and middle fingers are up: Clicking Mode
         if fingers[1] == 1 and fingers[2] == 1:
 
             # 9. Find distance btween fingers
@@ -61,6 +63,29 @@ while True:
                     img, (lineInfo[4], lineInfo[5]), 15, (255, 255, 255), cv2.FILLED
                 )
                 autopy.mouse.click()
+
+        # 11. Both index and pinky fingers are up: Scrolling Mode - Up
+        if (
+            fingers[0] == 0
+            and fingers[1] == 1
+            and fingers[2] == 0
+            and fingers[3] == 0
+            and fingers[4] == 1
+        ):
+            cv2.circle(img, (x1, y1), 15, (167, 0, 180), cv2.FILLED)
+            cv2.circle(img, (x3, y3), 15, (167, 0, 180), cv2.FILLED)
+            pyautogui.scroll(5)
+
+        # 12. Only pinky finger is up: Scrolling Mode - Down
+        if (
+            fingers[0] == 0
+            and fingers[1] == 0
+            and fingers[2] == 0
+            and fingers[3] == 0
+            and fingers[4] == 1
+        ):
+            cv2.circle(img, (x3, y3), 15, (167, 0, 180), cv2.FILLED)
+            pyautogui.scroll(-5)
 
     currTime = time.time()
     fps = 1 / (currTime - prevTime)
