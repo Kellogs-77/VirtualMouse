@@ -3,6 +3,7 @@ import numpy as np
 import HandTrackingModule as htm
 import time
 import autopy
+import pyautogui
 
 frameR = 100  # Frame Reduction
 webcam = cv2.VideoCapture(0)
@@ -74,4 +75,4 @@ while True:
         break
 
 
-# 11. Frame rate
+print("Code completed!")
