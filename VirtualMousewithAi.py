@@ -27,6 +27,7 @@ while True:
         x1, y1 = lmList[8][1:]
         x2, y2 = lmList[12][1:]
         x3, y3 = lmList[20][1:]
+        x4, y4 = lmList[4][1:]
 
         # print(x1, y1, x2, y2)
 
@@ -37,14 +38,20 @@ while True:
             img, (frameR, frameR), (640 - frameR, 480 - frameR), (167, 0, 180), 2
         )
         # 4. Only index Finger : Moving Mode
-        if fingers[1] == 1 and fingers[2] == 0 and fingers[4] == 0:
+        if (
+            fingers[0] == 0
+            and fingers[1] == 1
+            and fingers[2] == 0
+            and fingers[3] == 0
+            and fingers[4] == 0
+        ):
             # 5. Convert Coordinates
-            x4 = np.interp(x1, (frameR, 640 - frameR), (0, wScr))
-            y4 = np.interp(y1, (frameR, 480 - frameR), (0, hScr))
+            x5 = np.interp(x1, (frameR, 640 - frameR), (0, wScr))
+            y5 = np.interp(y1, (frameR, 480 - frameR), (0, hScr))
 
             # 6. Smoothen Values
-            currLocX = prevLocX + (x4 - prevLocX) / smoothening
-            currLocY = prevLocY + (y4 - prevLocY) / smoothening
+            currLocX = prevLocX + (x5 - prevLocX) / smoothening
+            currLocY = prevLocY + (y5 - prevLocY) / smoothening
 
             # 7. Move mouse
             autopy.mouse.move(wScr - currLocX, currLocY)
@@ -52,7 +59,13 @@ while True:
             prevLocX, prevLocY = currLocX, currLocY
 
         # 8. Both index and middle fingers are up: Clicking Mode
-        if fingers[1] == 1 and fingers[2] == 1:
+        if (
+            fingers[0] == 0
+            and fingers[1] == 1
+            and fingers[2] == 1
+            and fingers[3] == 0
+            and fingers[4] == 0
+        ):
 
             # 9. Find distance btween fingers
             length, img, lineInfo = detector.findDistance(8, 12, img)
@@ -62,7 +75,7 @@ while True:
                 cv2.circle(
                     img, (lineInfo[4], lineInfo[5]), 15, (255, 255, 255), cv2.FILLED
                 )
-                autopy.mouse.click()
+                pyautogui.click()
 
         # 11. Both index and pinky fingers are up: Scrolling Mode - Up
         if (
@@ -86,7 +99,25 @@ while True:
         ):
             cv2.circle(img, (x3, y3), 15, (167, 0, 180), cv2.FILLED)
             pyautogui.scroll(-5)
-
+        # 13. Only thumb is up: Double Click Mode
+        if (
+            fingers[0] == 1
+            and fingers[1] == 0
+            and fingers[2] == 0
+            and fingers[3] == 0
+            and fingers[4] == 0
+        ):
+            cv2.circle(img, (x4, y4), 15, (167, 0, 180), cv2.FILLED)
+            pyautogui.doubleClick()
+        # middle, ring, pinky up and thumb and pointer down: Close the program
+        if (
+            fingers[0] == 0
+            and fingers[1] == 0
+            and fingers[2] == 1
+            and fingers[3] == 1
+            and fingers[4] == 1
+        ):
+            break
     currTime = time.time()
     fps = 1 / (currTime - prevTime)
     prevTime = currTime
